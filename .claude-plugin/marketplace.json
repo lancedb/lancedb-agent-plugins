@@ -1,0 +1,33 @@
+{
+  "name": "lancedb",
+  "owner": {
+    "name": "LanceDB"
+  },
+  "metadata": {
+    "description": "Agent plugins from LanceDB for building multimodal data pipelines"
+  },
+  "plugins": [
+    {
+      "name": "lancedb",
+      "source": "./",
+      "description": "Write, review, debug, and document LanceDB pipelines that work across local LanceDB OSS tables and remote LanceDB Enterprise tables, with idiomatic query/search patterns and performance defaults for ingestion, indexing, filtering, and diagnostics.",
+      "author": {
+        "name": "LanceDB"
+      },
+      "repository": "https://github.com/lancedb/lancedb-agent-plugins",
+      "homepage": "https://www.lancedb.com",
+      "keywords": [
+        "lancedb",
+        "vector-search",
+        "full-text-search",
+        "hybrid-search",
+        "python",
+        "typescript",
+        "pipelines",
+        "ingestion",
+        "indexing",
+        "performance"
+      ]
+    }
+  ]
+}
