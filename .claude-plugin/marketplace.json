@@ -16,6 +16,7 @@
       },
       "repository": "https://github.com/lancedb/lancedb-agent-plugins",
       "homepage": "https://www.lancedb.com",
+      "license": "Apache-2.0",
       "keywords": [
         "lancedb",
         "vector-search",
