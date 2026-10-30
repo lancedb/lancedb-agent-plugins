@@ -67,7 +67,14 @@ TypeScript:
 Both SDKs:
 
 - Ingest in bulk or in batches of thousands of rows; never write per-row in a loop — each write creates a version and fragment, slowing ingestion and later queries.
-- Build a vector index once brute-force search is too slow (rule of thumb: beyond roughly 100K vectors locally), and scalar indexes for filtered columns and merge/upsert keys. Use index defaults unless the task states recall/latency requirements.
+- When you create or load a table with a vector or text column, build the indexes its likely queries need: a vector index on the embedding, using the embedding model's distance metric (usually cosine, not the L2 default), and FTS on text, via `create_index(col, config=FTS())` (the older `create_fts_index` is deprecated). Add scalar indexes only for columns the user filters on or upserts by, not for every id column. If you don't know the queries, tell the user which indexes they'll need before they search at scale. On Enterprise, build them at load time: brute force over an unindexed table is the usual cause of "LanceDB is slow". Use index defaults unless the task states recall/latency requirements. In Python:
+
+  ```python
+  from lancedb.index import FTS, IvfPq
+
+  table.create_index("embedding", config=IvfPq(distance_type="cosine"))
+  table.create_index("body", config=FTS())
+  ```
 
 ## Enterprise: never drop-then-reuse the same table name
 
