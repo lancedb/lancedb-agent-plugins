@@ -41,9 +41,9 @@ compare compatible signatures; do not interpret it as an embedding or as the
 raw uint16 payload of a Lance index. This statement materializes source columns
 and signatures in a new table. It does not build an LSH index.
 
-The current eager SDK `add_columns({"signature": "minhash(body)"})` and SQL
-`ALTER TABLE ... ADD COLUMN ... AS minhash(body)` paths use a separate expression
-planner and reject `minhash` as an unknown function. Do not recommend those
+Older servers can reject the eager SDK `add_columns({"signature": "minhash(body)"})` and SQL
+`ALTER TABLE ... ADD COLUMN ... AS minhash(body)` forms with an unknown-function error because column writing uses a separate
+expression planner. Do not recommend those
 forms merely because SELECT succeeds. Verify support on the target server
 before using a newer column-writing path.
 
