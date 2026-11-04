@@ -1,6 +1,6 @@
 ---
 name: lancedb
-description: Use when writing, reviewing, debugging, or documenting LanceDB pipelines in Python or TypeScript, especially code that should work across local LanceDB OSS tables and remote LanceDB Enterprise/Cloud tables. Helps avoid non-portable full-table materialization, choose idiomatic query/search patterns, apply LanceDB performance defaults for ingestion, indexing, filtering, and diagnostics, and resolve connections to the remote server for Enterprise-only operations such as jobs.
+description: Use when writing, reviewing, debugging, or documenting LanceDB pipelines in Python or TypeScript, especially code that should work across local LanceDB OSS tables and remote LanceDB Enterprise/Cloud tables, or when using native Enterprise SQL for MinHash text deduplication. Helps avoid non-portable full-table materialization, choose idiomatic query/search patterns, apply LanceDB performance defaults for ingestion, indexing, filtering, and diagnostics, and resolve connections to the remote server for Enterprise-only operations such as jobs.
 ---
 
 # Building LanceDB Pipelines
@@ -18,13 +18,14 @@ Do NOT assume local-only table helpers exist on remote tables. If the user asks 
 
 ## Workflow
 
-1. Identify the SDK: Python, TypeScript, or both.
+1. Identify the SDK: Python, TypeScript, or both. For MinHash text deduplication, read `references/text_deduplication.md` first; its native Enterprise SQL functions are not portable SDK table methods.
 2. Identify the table mode: local/embedded OSS, remote Enterprise/Cloud, or portable across both. If the user says "LanceDB Enterprise", choose the remote table path. If the task involves jobs in any way (listing, inspecting, creating, or canceling jobs), it is always the remote path and requires a remote server connection — see "Connecting to the LanceDB remote server" below before doing anything else.
 3. Read the matching topic reference before writing or changing code:
    - Column metadata authoring (both SDKs): `references/column_metadata.md`
    - Branch operations (both SDKs): `references/branch_ops.md`
    - Remote server connection resolution (jobs, raw REST): `references/remote_connect.md`
    - Job operations REST API (list/describe/cancel/query_events): `references/remote_jobs.md`
+   - MinHash text deduplication, scan versus stored-index workflows and release boundaries: `references/text_deduplication.md`
 
    There is no bundled per-language guide. For exact method names, signatures, and options, look them up in the canonical sources instead of relying on memory:
    - Python: `docs/src/python/python.md` (the hand-maintained API reference) and the source under `python/python/lancedb/` when working inside the LanceDB repo; otherwise <https://lancedb.github.io/lancedb/python/python/>.
