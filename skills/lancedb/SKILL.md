@@ -25,7 +25,7 @@ Do NOT assume local-only table helpers exist on remote tables. If the user asks 
    - Branch operations (both SDKs): `references/branch_ops.md`
    - Remote server connection resolution (jobs, raw REST): `references/remote_connect.md`
    - Job operations REST API (list/describe/cancel/query_events): `references/remote_jobs.md`
-   - MinHash text deduplication, scan versus stored-index workflows and release boundaries: `references/text_deduplication.md`
+   - MinHash signature generation, CTAS materialization, scan deduplication and column-expression limits: `references/text_deduplication.md`
 
    There is no bundled per-language guide. For exact method names, signatures, and options, look them up in the canonical sources instead of relying on memory:
    - Python: `docs/src/python/python.md` (the hand-maintained API reference) and the source under `python/python/lancedb/` when working inside the LanceDB repo; otherwise <https://lancedb.github.io/lancedb/python/python/>.
