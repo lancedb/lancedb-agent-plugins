@@ -36,10 +36,11 @@ CREATE TABLE documents_with_signatures AS
 SELECT *, minhash(body) AS signature FROM documents;
 ```
 
-The signature is binary, with a versioned envelope. Use `minhash_distance` to
-compare compatible signatures; do not interpret it as an embedding or as the
-raw uint16 payload of a Lance index. This statement materializes source columns
-and signatures in a new table. It does not build an LSH index.
+Preserve the returned signature values and field metadata. Use
+`minhash_distance` to compare compatible signatures; do not interpret a
+signature as an embedding or assume raw Lance index values carry the required
+SQL metadata. This statement materializes source columns and signatures in a
+new table. It does not build an LSH index.
 
 Older servers can reject the eager SDK `add_columns({"signature": "minhash(body)"})` and SQL
 `ALTER TABLE ... ADD COLUMN ... AS minhash(body)` forms with an unknown-function error because column writing uses a separate
