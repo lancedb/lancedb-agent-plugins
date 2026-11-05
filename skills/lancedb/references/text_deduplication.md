@@ -36,27 +36,57 @@ CREATE TABLE documents_with_signatures AS
 SELECT *, minhash(body) AS signature FROM documents;
 ```
 
-Preserve the returned signature values and field metadata. Use
+Signatures are `FixedSizeList<UInt16>` values with configuration metadata.
+Preserve both the values and field metadata. Use
 `minhash_distance` to compare compatible signatures; do not interpret a
 signature as an embedding or assume raw Lance index values carry the required
 SQL metadata. This statement materializes source columns and signatures in a
 new table. It does not build an LSH index.
 
-Older servers can reject the eager SDK `add_columns({"signature": "minhash(body)"})` and SQL
-`ALTER TABLE ... ADD COLUMN ... AS minhash(body)` forms with an unknown-function error because column writing uses a separate
-expression planner. Do not recommend those
-forms merely because SELECT succeeds. Verify support on the target server
-before using a newer column-writing path.
+## Add and reuse a signature column
+
+On a server with eager MinHash column-writing support, the Python SDK can add
+signatures to an existing table:
+
+```python
+table.add_columns({"signature": "minhash(body)"})
+```
+
+Then compare both paths through the same SQL API:
+
+```sql
+-- Read the stored hashes.
+SELECT * FROM dedupe('documents', 'signature', distance_threshold => 0.2);
+-- Compute hashes from text during this query.
+SELECT * FROM dedupe('documents', 'body', distance_threshold => 0.2);
+```
+
+Saved-signature input requires its own server support in addition to column
+writing. The field metadata identifies a MinHash signature and supplies omitted
+hash-count and shingle settings; ordinary integer lists are not signatures.
+Explicit settings must agree with the metadata. Keep eager signatures updated
+when their source text changes. Verify `computed_signatures=0` and
+`column_signatures` in EXPLAIN ANALYZE when demonstrating reuse.
+
+The [two-path Sophon demo](https://github.com/lancedb/sophon/tree/main/tools/minhash-demo)
+writes data, calls the native eager endpoint used by the SDK, and compares both
+results and execution metrics. It does not require an LSH index.
+
+Older servers can reject MinHash column expressions even when SELECT works.
+Deferred `computed=` columns and SQL `ALTER TABLE ... ADD COLUMN ... AS` use a
+different path; eager support does not establish support for those forms.
 
 ## Find lexical duplicates
 
 ```sql
 SELECT minhash_distance(minhash('a red fox'), minhash('a red fox')) AS distance;
-SELECT * FROM text_dedupe('documents', 'body', distance_threshold => 0.2);
-SELECT * FROM text_duplicate_pairs('documents', 'body', distance_threshold => 0.2);
+SELECT * FROM dedupe('documents', 'body', distance_threshold => 0.2);
+SELECT * FROM duplicate_pairs('documents', 'body', distance_threshold => 0.2);
 ```
 
-The first result is zero. The batch queries compute signatures from source text.
+The first result is zero. These batch queries compute signatures from source text.
+The unified functions dispatch between text, tagged signatures and vector input;
+the `text_dedupe` and `text_duplicate_pairs` names remain text aliases.
 They require native tables without WAL and use one plan executor. A small
 result LIMIT does not restrict the underlying deduplication workload. Returned
 rows do not delete the source, and pair row IDs are not user IDs: map them with
@@ -68,7 +98,7 @@ LSH can miss qualifying pairs and signatures can collide; use exact token-shingl
 comparison when the decision must enforce an exact Jaccard threshold.
 The default policy keeps one representative per connected group, including
 transitive matches. Use `resolution => 'direct_representative'` with
-`text_dedupe` when every removed row must directly match its retained row.
+`dedupe` when every removed row must directly match its retained row.
 
 Index-backed batch queries require additional server support. Do not infer it
 from these scalar or scan functions, or relabel a scan as indexed execution.
