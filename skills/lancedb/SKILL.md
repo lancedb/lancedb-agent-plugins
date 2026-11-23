@@ -1,6 +1,6 @@
 ---
 name: lancedb
-description: Use when writing, reviewing, debugging, or documenting LanceDB pipelines in Python or TypeScript, especially code that should work across local LanceDB OSS tables and remote LanceDB Enterprise/Cloud tables. Helps avoid non-portable full-table materialization, choose idiomatic query/search patterns, apply LanceDB performance defaults for ingestion, indexing, filtering, and diagnostics, and resolve connections to the remote server for Enterprise-only operations such as jobs.
+description: Use for LanceDB pipelines in Python or TypeScript, including search, ingestion, indexing, and Enterprise jobs. Use for LanceDB Functions registration, computed column binding and refresh, failed-row recovery, Secrets, GPU resources, and chunking. Guides SDK use across LanceDB Embedded and LanceDB Enterprise.
 ---
 
 # Building LanceDB Pipelines
@@ -18,9 +18,14 @@ Do NOT assume local-only table helpers exist on remote tables. If the user asks 
 
 ## Workflow
 
+For Functions tasks, read `references/functions.md` before the steps below.
+
 1. Identify the SDK: Python, TypeScript, or both.
-2. Identify the table mode: local/embedded OSS, remote Enterprise/Cloud, or portable across both. If the user says "LanceDB Enterprise", choose the remote table path. If the task involves jobs in any way (listing, inspecting, creating, or canceling jobs), it is always the remote path and requires a remote server connection — see "Connecting to the LanceDB remote server" below before doing anything else.
+2. Identify the execution model: LanceDB Embedded, LanceDB Enterprise, or code that must support both.
+   For Enterprise jobs, resolve the server connection with `references/remote_connect.md` after reading the applicable Functions reference.
 3. Read the matching topic reference before writing or changing code:
+   - Functions registration, UDFs, computed columns, refresh, failed rows, Secrets, GPUs, and chunkers: `references/functions.md`
+   - Use the legacy `geneva` path only for an explicit request or an existing workload that uses that package.
    - Column metadata authoring (both SDKs): `references/column_metadata.md`
    - Branch operations (both SDKs): `references/branch_ops.md`
    - Remote server connection resolution (jobs, raw REST): `references/remote_connect.md`
