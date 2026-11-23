@@ -1,4 +1,8 @@
-# Job operations on LanceDB Enterprise/Cloud
+# Job operations on LanceDB Enterprise
+
+For Function registration, computed column refresh, or failed-row recovery, read [functions.md](functions.md) first.
+Functions refresh jobs use the Enterprise job registry and SDK job handles, not `geneva_jobs`.
+The legacy section below applies only to workloads that use the `geneva` package.
 
 Jobs are server-side async operations (index builds, column backfills, materialized
 view refreshes). There are **two separate job registries**; work out which one your
